@@ -3,8 +3,7 @@ name: Node.js CI
 on:
   push:
     paths:
-      - 'profile/*'
-    branches: [ master ]
+      - 'services/profile/*'
 
 jobs:
   test:
