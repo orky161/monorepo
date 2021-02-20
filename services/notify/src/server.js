@@ -12,7 +12,7 @@ app.use(bodyParser.json())
 app.use(morgan('short'))
 
 app.get("/ping", (req, res) => {
-    res.status(200).json({msg: "ping from notify"})
+    res.status(200).json({msg: "ping from notify eks1"})
 })
 
 app.post("/notify", (req, res) => {

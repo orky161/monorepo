@@ -1,0 +1,8 @@
+name: profile
+namespace: dev
+port: 8080
+deployment:
+  replicas: 2
+  env:
+    NOTIFY_SERVICE: "http://notify-service"
+

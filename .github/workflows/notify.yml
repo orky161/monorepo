@@ -53,22 +53,23 @@ jobs:
     outputs:
       image: ${{ steps.vars.outputs.image }}
 
-#  deploy:
-#    needs: build-n-push
-#
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: us-east-1
-#
-#      - name: helm deploy
-#        uses: koslib/helm-eks-action@master
-#        env:
-#          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-#        with:
-#          command: helm upgrade notify --install --wait ./k8s/helm-service --values ./k8s/values.yaml --set deployment.image=${{ needs.build-n-push.outputs.image }}
+  deploy:
+    needs: build-n-push
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: helm deploy
+        uses: koslib/helm-eks-action@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          command: helm upgrade notify --install --wait ./k8s/helm-service --values ./services/notify/helm-chart/values.yaml --set deployment.image=${{ needs.build-n-push.outputs.image }}
+

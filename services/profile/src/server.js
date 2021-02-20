@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 app.use(morgan('short'))
 
 app.get("/ping", (req, res) => {
-    res.status(200).json({msg: "ping from profile"})
+    res.status(200).json({msg: "ping from profile eks1"})
 })
 
 app.get("/profile", (req, res) => {
