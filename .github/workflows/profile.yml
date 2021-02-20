@@ -2,8 +2,8 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
+    paths:
+      - 'profile/*'
     branches: [ master ]
 
 jobs:
