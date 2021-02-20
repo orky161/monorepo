@@ -1,0 +1,6 @@
+name: notify
+namespace: dev
+port: 8081
+deployment:
+  replicas: 2
+

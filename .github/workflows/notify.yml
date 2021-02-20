@@ -3,7 +3,7 @@ name: Node.js CI
 on:
   push:
     paths:
-      - 'services/profile/**'
+      - 'services/notify/**'
     branches: [ master ]
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn install --frozen-lockfile
     - run: npm run build --if-present
-    - run: yarn workspace profile run test
+    - run: yarn workspace notify run test
 
   build-n-push:
     needs: test
@@ -34,7 +34,7 @@ jobs:
     - name: Declare some docker variables
       id: vars
       shell: bash
-      run: echo "::set-output name=image::ghcr.io/orky161/profile:${{ env.GITHUB_REF_SLUG }}-${{ env.GITHUB_SHA_SHORT }}"
+      run: echo "::set-output name=image::ghcr.io/orky161/notify:${{ env.GITHUB_REF_SLUG }}-${{ env.GITHUB_SHA_SHORT }}"
 
     - run: echo ${{ steps.vars.outputs.image }}
     - name: Login to GitHub Container Registry
@@ -45,7 +45,7 @@ jobs:
         password: ${{ secrets.CR_PAT }}
 
     - name: Build docker image
-      run: docker image build . -t ${{ steps.vars.outputs.image }} -f ./services/profile/Dockerfile
+      run: docker image build . -t ${{ steps.vars.outputs.image }} -f ./services/notify/Dockerfile
 
     - name: Push docker image
       run: docker push ${{ steps.vars.outputs.image }}
@@ -71,4 +71,4 @@ jobs:
 #        env:
 #          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
 #        with:
-#          command: helm upgrade profile --install --wait ./k8s/helm-service --values ./k8s/values.yaml --set deployment.image=${{ needs.build-n-push.outputs.image }}
+#          command: helm upgrade notify --install --wait ./k8s/helm-service --values ./k8s/values.yaml --set deployment.image=${{ needs.build-n-push.outputs.image }}
