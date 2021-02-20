@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'services/profile/**'
+    branches: [ master ]
 
 jobs:
   test:
