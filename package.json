@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "libs/*"
+  ],
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  },
+  "name": "mono-repo"
+}
