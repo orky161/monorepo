@@ -26,6 +26,7 @@ app.get("/profile", (req, res) => {
     })
 })
 
+
 app.post("/profile/notify", async (req, res) => {
     await axios.post(`${process.env.NOTIFY_SERVICE}/notify`, {name: "or the awesome", message: req.body.message})
     res.status(202).json({message: `notify ${req.body.message}`})
