@@ -21,6 +21,8 @@ app.post("/notify", (req, res) => {
     res.status(202).json({msg: "accepted"})
 })
 
+
+
 app.listen(port, () => {
     logger(`Example app listening at http://localhost:${port}`)
 })
