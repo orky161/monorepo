@@ -1,0 +1,74 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn install --frozen-lockfile
+    - run: npm run build --if-present
+    - run: yarn workspace profile run test
+
+  build-n-push:
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: rlespinasse/github-slug-action@v3.x
+    - name: Declare some docker variables
+      id: vars
+      shell: bash
+      run: echo "::set-output name=image::ghcr.io/orky161/profile:${{ env.GITHUB_REF_SLUG }}-${{ env.GITHUB_SHA_SHORT }}"
+
+    - run: echo ${{ steps.vars.outputs.image }}
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+
+    - name: Build docker image
+      run: docker image build . -t ${{ steps.vars.outputs.image }} -f ./services/profile/Dockerfile
+
+    - name: Push docker image
+      run: docker push ${{ steps.vars.outputs.image }}
+
+    outputs:
+      image: ${{ steps.vars.outputs.image }}
+
+#  deploy:
+#    needs: build-n-push
+#
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: AWS Credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: us-east-1
+#
+#      - name: helm deploy
+#        uses: koslib/helm-eks-action@master
+#        env:
+#          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+#        with:
+#          command: helm upgrade basic --install --wait ./k8s/helm-service --values ./k8s/values.yaml --set deployment.image=${{ needs.build-n-push.outputs.image }}
